@@ -1,6 +1,5 @@
-FROM golang:1.14
+FROM debian
 
-WORKDIR /go/src/app
-COPY . .
+COPY go-fibserv /
 
-CMD go run fibserv.go
+CMD ["/go-fibserv"]
