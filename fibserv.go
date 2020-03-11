@@ -39,17 +39,23 @@ func gen_html(current int, content string) string {
 func main() {
 	var a = 1
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		nstr, ok := r.URL.Query()["n"]
-		if ok {
-			n, _ := strconv.Atoi(nstr[0])
-			start := time.Now()
-			fibn := fib(n)
-			elapsed := time.Since(start)
-			fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", n, fibn, a, elapsed)))
-			a++
-		} else {
+		nstr, has_n := r.URL.Query()["n"]
+		if !has_n {
 			fmt.Fprintf(w, gen_html(20, ""))
+			return
 		}
+
+		n, err := strconv.Atoi(nstr[0])
+		if err != nil {
+			fmt.Fprintf(w, gen_html(20, "ERROR: %v.\n"))
+			return
+		}
+
+		start := time.Now()
+		fibn := fib(n)
+		elapsed := time.Since(start)
+		fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", n, fibn, a, elapsed)))
+		a++
 	})
 
 	fmt.Printf("Serving on port 8080...\n")
