@@ -8,19 +8,25 @@ import (
 	"time"
 )
 
-func timeFib(n int) (int, time.Duration) {
-	start := time.Now()
-	fibn := fib(n)
-	elapsed := time.Since(start)
-	return fibn, elapsed
-}
-
-func fib(n int) int {
+func fibHelper(n int) int {
 	if n > 2 {
-		return fib(n-1) + fib(n-2)
+		return fibHelper(n-1) + fibHelper(n-2)
 	} else {
 		return 1
 	}
+}
+
+type FibResponse struct {
+	Index           int
+	Value           int
+	CalculationTime time.Duration
+}
+
+func fib(n int) FibResponse {
+	start := time.Now()
+	fibn := fibHelper(n)
+	elapsed := time.Since(start)
+	return FibResponse{n, fibn, elapsed}
 }
 
 func gen_html(current int, content string) string {
@@ -44,7 +50,8 @@ func gen_html(current int, content string) string {
 }
 
 func main() {
-	var a = 1
+
+	var requestCount = 1
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		nstr, has_n := r.URL.Query()["n"]
 		if !has_n {
@@ -58,9 +65,9 @@ func main() {
 			return
 		}
 
-		fibn, elapsed := timeFib(n)
-		fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", n, fibn, a, elapsed)))
-		a++
+		f := fib(n)
+		fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", f.Index, f.Value, requestCount, f.CalculationTime)))
+		requestCount++
 	})
 
 	fmt.Printf("Serving on port 8080...\n")
