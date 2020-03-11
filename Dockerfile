@@ -1,7 +1,10 @@
-FROM golang:1.14
+FROM golang:1.14 as build
+WORKDIR /build
+COPY . .
+RUN CGO_ENABLED=0 go build ./fibserv.go
 
-WORKDIR /usr/src/app
+FROM scratch
 
-COPY fibserv.go .
+COPY --from=build /build/fibserv /entrypoint
 
-CMD ["go", "run", "fibserv.go"]
+CMD ["/entrypoint"]
