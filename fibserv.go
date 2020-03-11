@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+func timeFib(n int) (int, time.Duration) {
+	start := time.Now()
+	fibn := fib(n)
+	elapsed := time.Since(start)
+	return fibn, elapsed
+}
+
 func fib(n int) int {
 	if n > 2 {
 		return fib(n-1) + fib(n-2)
@@ -51,9 +58,7 @@ func main() {
 			return
 		}
 
-		start := time.Now()
-		fibn := fib(n)
-		elapsed := time.Since(start)
+		fibn, elapsed := timeFib(n)
 		fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", n, fibn, a, elapsed)))
 		a++
 	})
