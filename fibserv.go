@@ -52,5 +52,6 @@ func main() {
 		}
 	})
 
+	fmt.Printf("Serving on port 8080...\n")
 	http.ListenAndServe(":8080", nil)
 }
