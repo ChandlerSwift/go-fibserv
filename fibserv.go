@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"os"
+	"strconv"
 	"time"
 )
 
-func fib (n int) int {
-	if (n > 2) {
+func fib(n int) int {
+	if n > 2 {
 		return fib(n-1) + fib(n-2)
 	} else {
 		return 1
@@ -38,7 +38,7 @@ func gen_html(current int, content string) string {
 
 func main() {
 	var a = 1
-	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		nstr, ok := r.URL.Query()["n"]
 		if ok {
 			n, _ := strconv.Atoi(nstr[0])
