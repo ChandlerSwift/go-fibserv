@@ -1,0 +1,12 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: docker
+    image: plugins/docker
+    settings:
+      username: chandlerswift
+      password:
+        from_secret: docker_hub_password
+      repo: chandlerswift/go-fibserv
+      auto_tag: true
