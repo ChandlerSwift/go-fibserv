@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 )
+
+var requestCount = 1
 
 func fibHelper(n int) int {
 	if n > 2 {
@@ -49,26 +52,47 @@ func gen_html(current int, content string) string {
 </html>`, current, content, hostname)
 }
 
+func servePage(w http.ResponseWriter, r *http.Request) {
+	nstr, has_n := r.URL.Query()["n"]
+	if !has_n {
+		fmt.Fprintf(w, gen_html(20, ""))
+		return
+	}
+
+	n, err := strconv.Atoi(nstr[0])
+	if err != nil {
+		fmt.Fprintf(w, gen_html(20, "ERROR: %v.\n"))
+		return
+	}
+
+	f := fib(n)
+	fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", f.Index, f.Value, requestCount, f.CalculationTime)))
+	requestCount++
+}
+
+func serveAPI(w http.ResponseWriter, r *http.Request) {
+	nstr, has_n := r.URL.Query()["n"]
+	if !has_n {
+		fmt.Fprintf(w, gen_html(20, ""))
+		return
+	}
+
+	n, err := strconv.Atoi(nstr[0])
+	if err != nil {
+		fmt.Fprintf(w, gen_html(20, "ERROR: %v.\n"))
+		return
+	}
+
+	f, err := json.Marshal(fib(n))
+
+	fmt.Fprintf(w, string(f))
+	requestCount++
+}
+
 func main() {
 
-	var requestCount = 1
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		nstr, has_n := r.URL.Query()["n"]
-		if !has_n {
-			fmt.Fprintf(w, gen_html(20, ""))
-			return
-		}
-
-		n, err := strconv.Atoi(nstr[0])
-		if err != nil {
-			fmt.Fprintf(w, gen_html(20, "ERROR: %v.\n"))
-			return
-		}
-
-		f := fib(n)
-		fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", f.Index, f.Value, requestCount, f.CalculationTime)))
-		requestCount++
-	})
+	http.HandleFunc("/", servePage)
+	http.HandleFunc("/api", serveAPI)
 
 	fmt.Printf("Serving on port 8080...\n")
 	http.ListenAndServe(":8080", nil)
