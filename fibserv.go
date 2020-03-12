@@ -73,13 +73,13 @@ func servePage(w http.ResponseWriter, r *http.Request) {
 func serveAPI(w http.ResponseWriter, r *http.Request) {
 	nstr, has_n := r.URL.Query()["n"]
 	if !has_n {
-		fmt.Fprintf(w, gen_html(20, ""))
+		http.Error(w, "parameter n (fib index) is required", http.StatusBadRequest)
 		return
 	}
 
 	n, err := strconv.Atoi(nstr[0])
 	if err != nil {
-		fmt.Fprintf(w, gen_html(20, "ERROR: %v.\n"))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
