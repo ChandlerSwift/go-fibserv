@@ -84,6 +84,9 @@ func serveAPI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	f, err := json.Marshal(fib(n))
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 
 	fmt.Fprintf(w, string(f))
 	requestCount++
