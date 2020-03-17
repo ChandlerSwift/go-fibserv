@@ -14,25 +14,25 @@ var requestCount = 1
 func fibHelper(n int) int {
 	if n > 2 {
 		return fibHelper(n-1) + fibHelper(n-2)
-	} else {
-		return 1
 	}
+
+	return 1
 }
 
-type FibResponse struct {
+type fibResponse struct {
 	Index           int
 	Value           int
 	CalculationTime time.Duration
 }
 
-func fib(n int) FibResponse {
+func fib(n int) fibResponse {
 	start := time.Now()
 	fibn := fibHelper(n)
 	elapsed := time.Since(start)
-	return FibResponse{n, fibn, elapsed}
+	return fibResponse{n, fibn, elapsed}
 }
 
-func gen_html(current int, content string) string {
+func genHTML(current int, content string) string {
 	hostname, _ := os.Hostname()
 	return fmt.Sprintf(`<!DOCTYPE html>
 <html>
@@ -53,26 +53,26 @@ func gen_html(current int, content string) string {
 }
 
 func servePage(w http.ResponseWriter, r *http.Request) {
-	nstr, has_n := r.URL.Query()["n"]
-	if !has_n {
-		fmt.Fprintf(w, gen_html(20, ""))
+	nstr, hasN := r.URL.Query()["n"]
+	if !hasN {
+		fmt.Fprintf(w, genHTML(20, ""))
 		return
 	}
 
 	n, err := strconv.Atoi(nstr[0])
 	if err != nil {
-		fmt.Fprintf(w, gen_html(20, "ERROR: %v.\n"))
+		fmt.Fprintf(w, genHTML(20, "ERROR: %v.\n"))
 		return
 	}
 
 	f := fib(n)
-	fmt.Fprintf(w, gen_html(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", f.Index, f.Value, requestCount, f.CalculationTime)))
+	fmt.Fprintf(w, genHTML(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", f.Index, f.Value, requestCount, f.CalculationTime)))
 	requestCount++
 }
 
 func serveAPI(w http.ResponseWriter, r *http.Request) {
-	nstr, has_n := r.URL.Query()["n"]
-	if !has_n {
+	nstr, hasN := r.URL.Query()["n"]
+	if !hasN {
 		http.Error(w, "parameter n (fib index) is required", http.StatusBadRequest)
 		return
 	}
