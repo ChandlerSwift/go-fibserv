@@ -2,6 +2,11 @@ kind: pipeline
 name: default
 
 steps:
+  - name: validate
+    image: golang
+    commands:
+      - go build
+      - go test
   - name: docker
     image: plugins/docker
     settings:
