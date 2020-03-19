@@ -7,17 +7,11 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/chandlerswift/fib"
 )
 
 var requestCount = 1
-
-func fibHelper(n int) int {
-	if n > 2 {
-		return fibHelper(n-1) + fibHelper(n-2)
-	}
-
-	return 1
-}
 
 type fibResponse struct {
 	Index           int
@@ -25,9 +19,9 @@ type fibResponse struct {
 	CalculationTime time.Duration
 }
 
-func fib(n int) fibResponse {
+func timeFib(n int) fibResponse {
 	start := time.Now()
-	fibn := fibHelper(n)
+	fibn := fib.Fib(n)
 	elapsed := time.Since(start)
 	return fibResponse{n, fibn, elapsed}
 }
@@ -65,7 +59,7 @@ func servePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	f := fib(n)
+	f := timeFib(n)
 	fmt.Fprintf(w, genHTML(n, fmt.Sprintf("Fibonnaci number #%v is %v. (Serving request #%v, took %v)", f.Index, f.Value, requestCount, f.CalculationTime)))
 	requestCount++
 }
@@ -83,7 +77,7 @@ func serveAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	f, err := json.Marshal(fib(n))
+	f, err := json.Marshal(timeFib(n))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
