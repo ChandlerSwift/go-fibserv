@@ -1,0 +1,7 @@
+.dockerignore
+.drone.yml
+azure-pipelines.yml
+.gitignore
+.git
+README.md
+LICENSE
