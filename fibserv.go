@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,6 +14,7 @@ import (
 )
 
 var requestCount = 1
+var port int
 
 type fibResponse struct {
 	Index           int
@@ -87,10 +90,16 @@ func serveAPI(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.IntVar(&port, "port", 8080, "port to listen on")
+	flag.Parse()
+
+	if port < 1 || port > 65535 {
+		log.Fatalf("Invalid port selected")
+	}
 
 	http.HandleFunc("/", servePage)
 	http.HandleFunc("/api", serveAPI)
 
-	fmt.Printf("Serving on port 8080...\n")
-	http.ListenAndServe(":8080", nil)
+	fmt.Printf("Serving on port %v...\n", port)
+	http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
 }
