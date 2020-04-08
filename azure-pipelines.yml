@@ -35,7 +35,7 @@ steps:
         dep ensure
     fi
     go build -v .
-    cp go-fibserv $(Build.ArtifactStagingDirectory)
+    cp $(GOPATH)/bin/go-fibserv $(Build.ArtifactStagingDirectory)
   workingDirectory: '$(modulePath)'
   displayName: 'Get dependencies, then build'
 
